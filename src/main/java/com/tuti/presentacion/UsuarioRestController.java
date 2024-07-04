@@ -29,11 +29,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tuti.dto.UsuarioResponseDTO;
-import com.tuti.entidades.Ciudad;
 import com.tuti.entidades.Usuario;
 import com.tuti.exception.Excepcion;
 import com.tuti.presentacion.error.MensajeError;
-import com.tuti.servicios.CiudadService;
 import com.tuti.servicios.UsuarioService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,8 +46,6 @@ public class UsuarioRestController {
 
 	@Autowired
 	private UsuarioService service;
-	@Autowired
-	private CiudadService ciudadService;
 
 	/**
 	 * Permite filtrar personas. Ej1 curl --location --request GET
@@ -119,14 +115,6 @@ public class UsuarioRestController {
 		}
 
 		Usuario u = form.toPojo();
-		Optional<Ciudad> c = ciudadService.getById(form.getIdCiudad());
-		if (c.isPresent())
-			u.setCiudad(c.get());
-		else {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-					getError("02", "Ciudad Requerida", "La ciudad indicada no se encuentra en la base de datos."));
-//				return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La ciudad indicada no se encuentra en la base de datos.");
-		}
 
 		// ahora inserto el cliente
 		service.insert(u);
@@ -155,14 +143,6 @@ public class UsuarioRestController {
 
 		else {
 			Usuario u = form.toPojo();
-			Optional<Ciudad> c = ciudadService.getById(form.getIdCiudad());
-			if (c.isPresent())
-				u.setCiudad(c.get());
-			else
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-						getError("02", "Ciudad Requerida", "La ciudad indicada no se encuentra en la base de datos."));
-//				return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("La ciudad indicada no se encuentra en la base de datos.");
-
 			if (!u.getDni().equals(dni))// El dni es el identificador, con lo cual es el único dato que no permito
 										// modificar
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
