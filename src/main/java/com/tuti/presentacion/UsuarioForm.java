@@ -7,7 +7,9 @@ import com.tuti.entidades.Usuario;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 /**
@@ -28,7 +30,9 @@ public class UsuarioForm {
 	@Email(message = "El e-mail ingresado no es válido")
 	private String email;
 	private Date fechaNac;
+	@Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[0-9]).+$", message = "La patente debe contener letras y números")
 	private String patente;
+	@NotEmpty(message = "Se debe proporcionar una contraseña")
 	private String password;
 	private BigDecimal saldo;
 

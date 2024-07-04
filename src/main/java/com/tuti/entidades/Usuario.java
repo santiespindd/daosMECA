@@ -20,7 +20,8 @@ public class Usuario {
 	private Date fechaNac;
 	@Column(unique=true)
 	private String patente;
-	private String password;
+	@Column(nullable = false)
+    private String password;
 	private BigDecimal saldo;
 
 	public Usuario() {
