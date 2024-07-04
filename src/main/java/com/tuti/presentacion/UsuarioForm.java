@@ -5,6 +5,7 @@ import java.util.Date;
 
 import com.tuti.entidades.Usuario;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -14,16 +15,17 @@ import jakarta.validation.constraints.Size;
  */
 public class UsuarioForm {
 
-	@NotNull(message = "El dni no puede ser nulo")
+	@NotNull(message = "El DNI no puede ser nulo")
 	@Min(7000000)
 	private Long dni;
 	@NotNull
-	@Size(min = 2, max = 30, message = "Apellido demasiado largo")
+	@Size(min = 2, max = 30, message = "El apellido debe contener entre {min} y {max} caracteres")
 	private String apellido;
 	@NotNull
-	@Size(min = 2, max = 30)
+	@Size(min = 2, max = 30, message = "El nombre debe contener entre {min} y {max} caracteres")
 	private String nombre;
 	private String domicilio;
+	@Email(message = "El e-mail ingresado no es válido")
 	private String email;
 	private Date fechaNac;
 	private String patente;

@@ -1,5 +1,7 @@
 package com.tuti.dto;
 
+import java.math.BigDecimal;
+
 import org.springframework.hateoas.RepresentationModel;
 import com.tuti.entidades.Usuario;
 
@@ -13,12 +15,18 @@ public class UsuarioResponseDTO extends RepresentationModel<UsuarioResponseDTO> 
 	private Long dni;
 	private String apellido;
 	private String nombre;
+	private String patente;
+	private BigDecimal saldo;
+	private String password;
 
 	public UsuarioResponseDTO(Usuario pojo) {
 		super();
 		this.apellido = pojo.getApellido();
 		this.nombre = pojo.getNombre();
 		this.dni = pojo.getDni();
+		this.patente = pojo.getPatente();
+		this.saldo = pojo.getSaldo();
+		this.password = pojo.getPassword();
 
 	}
 
@@ -44,6 +52,30 @@ public class UsuarioResponseDTO extends RepresentationModel<UsuarioResponseDTO> 
 
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
+	}
+
+	public String getPatente() {
+		return patente;
+	}
+
+	public void setPatente(String patente) {
+		this.patente = patente;
+	}
+
+	public BigDecimal getSaldo() {
+		return saldo;
+	}
+
+	public void setSaldo(BigDecimal saldo) {
+		this.saldo = saldo;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	@Override

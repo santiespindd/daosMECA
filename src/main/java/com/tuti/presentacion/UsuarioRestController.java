@@ -41,7 +41,7 @@ import jakarta.validation.constraints.Size;
 
 @RestController
 @RequestMapping("/usuarios")
-@Tag(name = "Usuarios", description = "Operaciones básicas con usuarios")
+@Tag(name = "Usuarios", description = "Buscar, agregar, actualizar y borrar usuarios del sistema")
 public class UsuarioRestController {
 
 	@Autowired
@@ -60,7 +60,7 @@ public class UsuarioRestController {
 	 * @return
 	 * @throws Excepcion
 	 */
-	@Operation(summary = "Permite filtrar usuarios")
+	@Operation(summary = "Filtrar usuarios por apellido y/o nombre (o mostrar todos si no hay parámetros)")
 	@GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE })
 	public List<UsuarioResponseDTO> filtrarUsuarios(@RequestParam(name = "apellido", required = false) String apellido,
 			@RequestParam(name = "nombre", required = false) @Size(min = 1, max = 20) String nombre) throws Excepcion {
@@ -79,13 +79,14 @@ public class UsuarioRestController {
 	 * Busca una persona a partir de su dni curl --location --request GET
 	 * 'http://localhost:8081/personas/27837171'
 	 * 
-	 * @param id DNI de la persona buscada
+	 * @param dni DNI de la persona buscada
 	 * @return Persona encontrada o Not found en otro caso
 	 * @throws Excepcion
 	 */
-	@GetMapping(value = "/{id}", produces = { MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<UsuarioResponseDTO> getById(@PathVariable Long id) throws Excepcion {
-		Optional<Usuario> rta = service.getById(id);
+	@Operation(summary = "Buscar un usuario por DNI")
+	@GetMapping(value = "/{dni}", produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<UsuarioResponseDTO> getById(@PathVariable Long dni) throws Excepcion {
+		Optional<Usuario> rta = service.getById(dni);
 		if (rta.isPresent()) {
 			Usuario pojo = rta.get();
 			return new ResponseEntity<UsuarioResponseDTO>(buildResponse(pojo), HttpStatus.OK);
@@ -104,6 +105,7 @@ public class UsuarioRestController {
 	 * @return Persona insertada o error en otro caso
 	 * @throws Exception
 	 */
+	@Operation(summary = "Agregar un nuevo usuario")
 	@PostMapping
 	public ResponseEntity<Object> guardar(@Valid @RequestBody UsuarioForm form, BindingResult result) throws Exception {
 
@@ -135,18 +137,19 @@ public class UsuarioRestController {
 	 * @return Persona Editada o error en otro caso
 	 * @throws Excepcion
 	 */
+	@Operation(summary = "Actualizar un usuario por DNI")
 	@PutMapping("/{dni}")
 	public ResponseEntity<Object> actualizar(@RequestBody UsuarioForm form, @PathVariable long dni) throws Exception {
 		Optional<Usuario> rta = service.getById(dni);
 		if (rta.isEmpty())
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encuentra la persona que desea modificar.");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró un usuario con ese DNI");
 
 		else {
 			Usuario u = form.toPojo();
 			if (!u.getDni().equals(dni))// El dni es el identificador, con lo cual es el único dato que no permito
 										// modificar
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-						.body(getError("03", "Dato no editable", "No puede modificar el dni."));
+						.body(getError("03", "Dato no editable", "No se puede modificar el DNI del usuario"));
 			service.update(u);
 			return ResponseEntity.ok(buildResponse(u));
 		}
@@ -160,10 +163,11 @@ public class UsuarioRestController {
 	 * @param dni Dni de la persona a borrar
 	 * @return ok en caso de borrar exitosamente la persona, error en otro caso
 	 */
+	@Operation(summary = "Borrar un usuario por DNI")
 	@DeleteMapping("/{dni}")
 	public ResponseEntity<String> eliminar(@PathVariable Long dni) {
 		if (!service.getById(dni).isPresent())
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No existe una persona con ese dni");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró un usuario con ese DNI");
 		service.delete(dni);
 
 		return ResponseEntity.ok().build();
