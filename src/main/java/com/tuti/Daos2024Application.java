@@ -19,10 +19,10 @@ public class Daos2024Application {
 	    public OpenAPI customOpenAPI() {
 	        return new OpenAPI()
 	                .info(new Info()
-	                        .title("Demo API")
+	                        .title("API MECA")
 	                        .version("1.0")
-	                        .description("Api demo utilizada en clases")
-	                        .termsOfService("http://tuti.com/terminosycondiciones")
+	                        .description("Api del Grupo DAOS = Amor - Ceballos - Espindola - Martin")
+	                        .termsOfService("https://cmlapazonline.com/politica-de-privacidad/")
 	                        .license(new License().name("LICENSE").url("https://tuti.com")));
 	  }
 	        

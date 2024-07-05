@@ -30,6 +30,27 @@ public class ComercioServiceImpl implements ComercioService {
     }
 
     @Override
+    public void updateByCuit(Long cuit, Comercio comercio) throws Excepcion {
+        // Validar que el comercio con el CUIT especificado exista
+        Optional<Comercio> optionalComercio = comercioDAO.findComercioByCuit(cuit);
+        if (!optionalComercio.isPresent()) {
+            throw new Excepcion("Comercio no encontrado con el CUIT especificado: " + cuit, 0);
+        }
+
+        // Obtener el comercio existente
+        Comercio comercioExistente = optionalComercio.get();
+
+        // Actualizar solo los campos relevantes
+        comercioExistente.setRazonSocial(comercio.getRazonSocial());
+        comercioExistente.setDireccion(comercio.getDireccion());
+
+        // No actualizar estado ni id aquí
+
+        // Guardar los cambios
+        comercioDAO.save(comercioExistente);
+    }
+
+    @Override
     public Optional<Comercio> getByCuit(Long cuit) {
         return comercioDAO.findComercioByCuit(cuit);
     }
@@ -41,6 +62,7 @@ public class ComercioServiceImpl implements ComercioService {
 
     @Override
     public void update(Comercio comercio) throws Excepcion {
+        // Validar el comercio usando Bean Validation
         Set<ConstraintViolation<Comercio>> violations = validator.validate(comercio);
         if (!violations.isEmpty()) {
             StringBuilder errorMsg = new StringBuilder();
@@ -50,15 +72,28 @@ public class ComercioServiceImpl implements ComercioService {
             throw new Excepcion(errorMsg.toString(), HttpStatus.BAD_REQUEST.value());
         }
 
-        if (comercioDAO.findComercioByCuit(comercio.getCuit()).isPresent()) {
-            comercioDAO.save(comercio);
+        // Obtener el comercio actual desde la base de datos
+        Optional<Comercio> existingComercio = comercioDAO.findById(comercio.getId());
+        if (existingComercio.isPresent()) {
+            // Actualizar solo los campos relevantes
+            Comercio comercioExistente = existingComercio.get();
+            comercioExistente.setRazonSocial(comercio.getRazonSocial());
+            comercioExistente.setDireccion(comercio.getDireccion());
+
+            // Mantener el estado como "autorizado"
+            comercioExistente.setEstado("autorizado");
+
+            // Guardar los cambios
+            comercioDAO.save(comercioExistente);
         } else {
-            throw new Excepcion("El comercio con el CUIT " + comercio.getCuit() + " no existe.", HttpStatus.NOT_FOUND.value());
+            throw new Excepcion("El comercio con ID " + comercio.getId() + " no existe.", HttpStatus.NOT_FOUND.value());
         }
     }
 
+
     @Override
     public void insert(Comercio comercio) throws Excepcion {
+        // Validar el comercio usando Bean Validation
         Set<ConstraintViolation<Comercio>> violations = validator.validate(comercio);
         if (!violations.isEmpty()) {
             StringBuilder errorMsg = new StringBuilder();
@@ -68,7 +103,9 @@ public class ComercioServiceImpl implements ComercioService {
             throw new Excepcion(errorMsg.toString(), HttpStatus.BAD_REQUEST.value());
         }
 
-        if (comercioDAO.findComercioByCuit(comercio.getCuit()).isPresent()) {
+        // Verificar si ya existe un comercio con el mismo CUIT
+        Optional<Comercio> existingComercio = comercioDAO.findComercioByCuit(comercio.getCuit());
+        if (existingComercio.isPresent()) {
             throw new Excepcion("El comercio con el CUIT " + comercio.getCuit() + " ya existe.", HttpStatus.BAD_REQUEST.value());
         }
 
@@ -79,6 +116,7 @@ public class ComercioServiceImpl implements ComercioService {
 
     @Override
     public void suspend(Long cuit) throws Excepcion {
+        // Buscar el comercio por CUIT
         Optional<Comercio> comercioOpt = comercioDAO.findComercioByCuit(cuit);
         if (comercioOpt.isPresent()) {
             Comercio comercio = comercioOpt.get();

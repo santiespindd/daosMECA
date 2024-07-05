@@ -15,6 +15,15 @@ public interface ComercioService {
     public List<Comercio> getAll();
 
     /**
+     * Actualiza un comercio a partir de su CUIT.
+     * @param cuit CUIT del comercio a actualizar.
+     * @param comercio Datos actualizados del comercio.
+     * @throws Excepcion Si el comercio no existe o hay violaciones de validación.
+     */
+    public void updateByCuit(Long cuit, Comercio comercio) throws Excepcion;
+    
+
+    /**
      * Obtiene un comercio a partir de su CUIT.
      * @param cuit
      * @return Comercio correspondiente al CUIT proporcionado.
