@@ -1,21 +1,38 @@
 package com.tuti.presentacion.error;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import com.tuti.exception.Excepcion;
-
-import jakarta.servlet.http.HttpServletRequest;
-
-@RestControllerAdvice
 public class ExceptionHandler {
+    private int statusCode;
+    private String message;
+    private String path;
 
-   @org.springframework.web.bind.annotation.ExceptionHandler(Excepcion.class)
-   public ResponseEntity<ErrorInfo> methodArgumentNotValidException(HttpServletRequest request, Excepcion e) {
-	   int statusCode= e.getStatusCode();
-	   
-	   ErrorInfo errorInfo = new ErrorInfo(HttpStatus.BAD_REQUEST.value(), e.getMessage(), request.getRequestURI());
-       return new ResponseEntity<>(errorInfo, HttpStatus.BAD_REQUEST);
-   }
+    public ExceptionHandler(int statusCode, String message, String path) {
+        this.statusCode = statusCode;
+        this.message = message;
+        this.path = path;
+    }
+
+    // Getters y setters
+    public int getStatusCode() {
+        return statusCode;
+    }
+
+    public void setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
 }
