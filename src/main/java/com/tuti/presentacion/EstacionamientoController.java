@@ -66,13 +66,13 @@ public class EstacionamientoController {
     public ResponseEntity<Object> estacionarVehiculo(@Valid @RequestBody EstacionamientoForm estacionamientoForm , BindingResult result) throws Exception {
     	if (result.hasErrors()) {
 			
-    		
+    		System.out.println(estacionamientoForm.getPatente());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(this.formatearError(result));
 			
 		}
-      
-            estacionamientoService.estacionarVehiculo(estacionamientoForm.getPatente(), estacionamientoForm.getPassword());
-            URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/estacionar").buildAndExpand(estacionamientoForm.getPatente())
+    	System.out.println(estacionamientoForm.getPatente());
+        estacionamientoService.estacionarVehiculo(estacionamientoForm.getPatente(), estacionamientoForm.getPassword());
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/estacionar").buildAndExpand(estacionamientoForm.getPatente())
     				.toUri(); 
 
     		return ResponseEntity.created(location).build();

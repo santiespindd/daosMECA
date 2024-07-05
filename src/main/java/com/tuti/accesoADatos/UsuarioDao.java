@@ -12,5 +12,5 @@ public interface UsuarioDao extends JpaRepository<Usuario, Long> {
 
 	public List<Usuario> findByApellidoOrNombre(String apellido, String nombre);
 	
-	public Optional<Usuario> findByPassword(String password);
+	public Optional<Usuario> findByPatente(String patente);
 }

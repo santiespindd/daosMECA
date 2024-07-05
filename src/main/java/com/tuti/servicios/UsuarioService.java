@@ -42,4 +42,5 @@ public interface UsuarioService {
 
 	public List<Usuario> filtrar(String apellido, String nombre);
 
+	public Optional<Usuario> getByPatente(String patente);
 }

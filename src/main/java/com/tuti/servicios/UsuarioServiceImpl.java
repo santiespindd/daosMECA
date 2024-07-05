@@ -29,6 +29,12 @@ public class UsuarioServiceImpl implements UsuarioService {
 		return  dao.findById(id);
 		
 	}
+	
+	@Override
+	public Optional<Usuario> getByPatente(String patente){
+		
+		return dao.findByPatente(patente);
+	}
 	@Override
 	public void update(Usuario u) {
 		dao.save(u);

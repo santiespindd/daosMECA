@@ -16,5 +16,7 @@ public interface EstacionamientoService {
 	 
 	
 	 public EstacionamientoDTO consultarEstado(String patente) throws Exception;
+	 
+	 
 
 }
