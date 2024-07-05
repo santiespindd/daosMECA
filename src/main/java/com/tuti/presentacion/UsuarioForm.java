@@ -1,6 +1,5 @@
 package com.tuti.presentacion;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 import com.tuti.entidades.Usuario;
@@ -13,7 +12,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 /**
- * Objeto necesario para insertar o eliminar una persona.
+ * Objeto necesario para insertar o actualizar un usuario
  */
 public class UsuarioForm {
 
@@ -34,7 +33,6 @@ public class UsuarioForm {
 	private String patente;
 	@NotEmpty(message = "Se debe proporcionar una contraseña")
 	private String password;
-	private BigDecimal saldo;
 
 	public Long getDni() {
 		return dni;
@@ -100,14 +98,6 @@ public class UsuarioForm {
 		this.password = password;
 	}
 
-	public BigDecimal getSaldo() {
-		return saldo;
-	}
-
-	public void setSaldo(BigDecimal saldo) {
-		this.saldo = saldo;
-	}
-
 	public Usuario toPojo() {
 		Usuario u = new Usuario();
 		u.setDni(this.getDni());
@@ -118,7 +108,6 @@ public class UsuarioForm {
 		u.setFechaNac(this.getFechaNac());
 		u.setPatente(this.getPatente());
 		u.setPassword(this.getPassword());
-		u.setSaldo(this.getSaldo());
 		return u;
 	}
 
