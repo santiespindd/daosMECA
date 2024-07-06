@@ -1,4 +1,4 @@
-/* package com.tuti.servicios;
+package com.tuti.servicios;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,26 +32,44 @@ public class RecargaServiceImpl implements RecargaService{
 	public void insert(Recarga recarga) throws Exception{
 		Optional<Usuario> usuarioOpt = usuarioService.getById(recarga.getUsuario().getDni());
 		Optional<Comercio>comercioOpt = comercioService.getByCuit(recarga.getComercio().getId());
-		Optional<Estacionamiento>estacionamientoOpt = estacionamientoService.getByPatente(recarga.getEstacionamiento().getPatente());
+	//	Optional<Estacionamiento>estacionamientoOpt = estacionamientoService.(recarga.getEstacionamiento().getPatente());
 		
-		if(usuarioOpt.isEmpty() || comercioOpt.isEmpty() || estacionamientoOpt.isEmpty()) {
+		if(usuarioOpt.isEmpty() || comercioOpt.isEmpty()) {
 			throw new Excepcion("Usuario, Comercio o estacionamiento no encontrado", 400);
 		}
 		
 		Usuario usuario = usuarioOpt.get();
 		Comercio comercio = comercioOpt.get();
-		Estacionamiento estacionamiento = estacionamientoOpt.get();
+	//	Estacionamiento estacionamiento = estacionamientoOpt.get();
 		
-		usuario.setSaldo(usuario.getSaldo() + recarga.getImporte());
+		usuario.setSaldo(usuario.getSaldo().add(recarga.getImporte()));
 		usuarioService.update(usuario);
 		recarga.setUsuario(usuario);
 		recarga.setComercio(comercio);
-		recarga.setEstacionamiento(estacionamiento);
+	//	recarga.setEstacionamiento(estacionamiento);
 		dao.save(recarga);		
 	}
 	public void delete(Long id) {
 		dao.deleteById(id);
 	}
+	   @Override
+	    public List<Recarga> getByUsuarioDni(Long dni) {
+	        return dao.findByUsuarioDni(dni);
+	    }
+	    @Override
+	    public List<Recarga> getByEstacionamientoPatente(String patente) {
+	        return dao.findByEstacionamientoPatente(patente);
+	    }
+
+	@Override
+	public Optional<Recarga> getById(Long id) {
+		return dao.findById(id);
+	}
+
+	@Override
+	public List<Recarga> getByComercioCuit(Long cuit) {
+
+		return dao.findByComercioCuit(cuit);
+	}
 
 }
-*/

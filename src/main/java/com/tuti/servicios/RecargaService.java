@@ -10,4 +10,8 @@ public interface RecargaService {
 	Optional<Recarga>getById(Long id);
 	void insert(Recarga recarga) throws Exception;
 	void delete(Long id);
+	
+	List<Recarga> getByUsuarioDni(Long dni);
+    List<Recarga> getByComercioCuit(Long cuit);
+    List<Recarga> getByEstacionamientoPatente(String patente);
 }

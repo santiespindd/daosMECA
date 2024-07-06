@@ -14,9 +14,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+
 import com.tuti.entidades.Comercio;
 import com.tuti.servicios.ComercioService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 import com.tuti.exception.Excepcion;
@@ -33,16 +36,14 @@ import com.tuti.exception.Excepcion;
  */
 @RestController
 @RequestMapping("/comercios")
+@Tag(name = "Comercio", description = "API para gestionar comercios")
 public class ComercioRestController {
 
     @Autowired
     private ComercioService comercioService;
 
-    /**
-     * Obtiene todos los comercios.
-     *
-     * @return ResponseEntity con la lista de todos los comercios y enlaces HATEOAS.
-     */
+    @Operation(summary = "Obtener todos los comercios", 
+               description = "Retorna una lista de todos los comercios registrados con enlaces HATEOAS.")
     @GetMapping
     public ResponseEntity<List<EntityModel<Comercio>>> getAll() {
         List<Comercio> comercios = comercioService.getAll();
@@ -52,12 +53,8 @@ public class ComercioRestController {
         return new ResponseEntity<>(comercioModels, HttpStatus.OK);
     }
 
-    /**
-     * Obtiene un comercio por su CUIT.
-     *
-     * @param cuit El CUIT del comercio a buscar.
-     * @return ResponseEntity con el comercio encontrado y enlaces HATEOAS, o 404 si no se encuentra.
-     */
+    @Operation(summary = "Obtener comercio por CUIT", 
+               description = "Busca y retorna un comercio específico basado en su CUIT.")
     @GetMapping("/cuit/{cuit}")
     public ResponseEntity<EntityModel<Comercio>> getByCuit(@PathVariable Long cuit) {
         Optional<Comercio> comercio = comercioService.getByCuit(cuit);
@@ -65,12 +62,8 @@ public class ComercioRestController {
                       .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    /**
-     * Obtiene un comercio por su razón social.
-     *
-     * @param razonSocial La razón social del comercio a buscar.
-     * @return ResponseEntity con el comercio encontrado y enlaces HATEOAS, o 404 si no se encuentra.
-     */
+    @Operation(summary = "Obtener comercio por razón social", 
+               description = "Busca y retorna un comercio específico basado en su razón social.")
     @GetMapping("/razonSocial/{razonSocial}")
     public ResponseEntity<EntityModel<Comercio>> getByRazonSocial(@PathVariable String razonSocial) {
         Optional<Comercio> comercio = comercioService.getByRazonSocial(razonSocial);
@@ -78,13 +71,8 @@ public class ComercioRestController {
                       .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    /**
-     * Inserta un nuevo comercio.
-     *
-     * @param comercioForm El formulario con los datos del nuevo comercio.
-     * @param result       Resultado de la validación del formulario.
-     * @return ResponseEntity con el comercio creado y enlaces HATEOAS, o mensaje de error si falla la validación.
-     */
+    @Operation(summary = "Insertar un nuevo comercio", 
+               description = "Crea un nuevo registro de comercio con los datos proporcionados.")
     @PostMapping
     public ResponseEntity<?> insertComercio(@Valid @RequestBody ComercioForm comercioForm, BindingResult result) {
         if (result.hasErrors()) {
@@ -92,10 +80,8 @@ public class ComercioRestController {
         }
 
         try {
-            // Establecer estado por defecto
             comercioForm.setEstado("autorizado");
-
-            Comercio comercio = comercioForm.toPojo(); // Esto debe manejar la creación del comercio
+            Comercio comercio = comercioForm.toPojo();
             comercioService.insert(comercio);
 
             URI location = new URI("/comercios/" + comercio.getId());
@@ -107,15 +93,8 @@ public class ComercioRestController {
         }
     }
 
-    /**
-     * Actualiza un comercio existente por su CUIT.
-     *
-     * @param cuit         El CUIT del comercio a actualizar.
-     * @param comercioForm El formulario con los datos actualizados del comercio.
-     * @param result       Resultado de la validación del formulario.
-     * @return ResponseEntity con el comercio actualizado y enlaces HATEOAS, o un mensaje de error si falla la validación o la operación.
-     */
-
+    @Operation(summary = "Actualizar comercio por CUIT", 
+               description = "Actualiza los datos de un comercio existente identificado por su CUIT.")
     @PutMapping("/cuit/{cuit}")
     public ResponseEntity<?> updateComercioByCuit(@PathVariable Long cuit, @Valid @RequestBody ComercioForm comercioForm, BindingResult result) {
         if (result.hasErrors()) {
@@ -129,10 +108,8 @@ public class ComercioRestController {
             }
 
             Comercio comercioToUpdate = existingComercio.get();
-            // Actualizar solo los campos permitidos
             comercioToUpdate.setRazonSocial(comercioForm.getRazonSocial());
             comercioToUpdate.setDireccion(comercioForm.getDireccion());
-            // No modificar el estado aquí para evitar cambios no deseados
 
             comercioService.update(comercioToUpdate);
             return ResponseEntity.ok(EntityModel.of(comercioToUpdate, createComercioLinks(comercioToUpdate)));
@@ -143,12 +120,8 @@ public class ComercioRestController {
         }
     }
 
-    /**
-     * Suspende un comercio por su ID.
-     *
-     * @param id El ID del comercio a suspender.
-     * @return ResponseEntity con estado 204 No Content si se suspende correctamente, o 404 si no se encuentra.
-     */
+    @Operation(summary = "Suspender comercio", 
+               description = "Cambia el estado de un comercio a suspendido basado en su CUIT.")
     @DeleteMapping("/{cuit}")
     public ResponseEntity<?> suspendComercio(@PathVariable Long cuit) {
         try {
@@ -159,14 +132,8 @@ public class ComercioRestController {
         }
     }
 
-
-    /**
-     * Busca comercios filtrando por CUIT o razón social.
-     *
-     * @param cuit         El CUIT del comercio a buscar (opcional).
-     * @param razonSocial  La razón social del comercio a buscar (opcional).
-     * @return ResponseEntity con la lista de comercios encontrados y enlaces HATEOAS.
-     */
+    @Operation(summary = "Buscar comercios", 
+               description = "Filtra y retorna comercios basados en CUIT o razón social.")
     @GetMapping("/buscar")
     public ResponseEntity<List<EntityModel<Comercio>>> buscarComercios(@RequestParam(required = false) Long cuit,
                                                                         @RequestParam(required = false) String razonSocial) {
@@ -177,12 +144,6 @@ public class ComercioRestController {
         return ResponseEntity.ok(comercioModels);
     }
 
-    /**
-     * Crea los enlaces HATEOAS para un comercio dado.
-     *
-     * @param comercio El comercio para el cual se generarán los enlaces.
-     * @return Arreglo de enlaces HATEOAS.
-     */
     private Link[] createComercioLinks(Comercio comercio) {
         Link selfLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(ComercioRestController.class).getByCuit(comercio.getCuit())).withSelfRel();
         Link allComerciosLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(ComercioRestController.class).getAll()).withRel("all-comercios");
