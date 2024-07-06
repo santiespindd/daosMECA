@@ -187,15 +187,12 @@ public class UsuarioRestController {
 			UsuarioResponseDTO dto = new UsuarioResponseDTO(pojo);
 			// Self link
 			Link selfLink = WebMvcLinkBuilder.linkTo(UsuarioRestController.class).slash(pojo.getDni()).withSelfRel();
-			// Method link: Link al servicio que permitirá navegar hacia la ciudad
-			// relacionada a la persona
-			// Link ciudadLink =
-			// WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(CiudadRestController.class)
-			// .getById(pojo.getCiudad().getId()))
-			// .withRel("ciudad");
+			// Method link: Link al servicio de estacionamiento
+			Link estadoLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(EstacionamientoController.class)
+			.consultarEstado(pojo.getPatente()))
+			.withRel("estado-estacionamiento");
 			dto.add(selfLink);
-
-			// dto.add(ciudadLink);
+			dto.add(estadoLink);
 			return dto;
 		} catch (Exception e) {
 			throw new Excepcion(e.getMessage(), 500);
