@@ -60,17 +60,17 @@ public class EstacionamientoServiceImpl implements EstacionamientoService {
     public  EstacionamientoDTO liberarVehiculo(String patente, String password) throws Exception {
     	Optional<Usuario> usuarioOpt = usuarioService.getByPatente(patente);
         if (!usuarioOpt.isPresent() || !usuarioOpt.get().getPassword().equals(password)) {
-            throw new Exception("Usuario no encontrado o contraseña incorrecta");
+        	throw new EstacionamientoException("Usuario no encontrado o contraseña incorrecta");
         }
 
         Optional<Estacionamiento> estacionamientoOpt = estacionamientoDAO.findByPatente(patente);
         if (!estacionamientoOpt.isPresent()) {
-            throw new Exception("El vehículo no está registrado");
+        	throw new EstacionamientoException("El vehículo no está registrado");
         }
 
         Estacionamiento estacionamiento = estacionamientoOpt.get();
         if ("Libre".equals(estacionamiento.getEstado())) {
-            throw new Exception("El vehículo ya está libre");
+        	throw new EstacionamientoException("El vehículo ya está libre");
         }
 
         estacionamiento.setEstado("Libre");
@@ -83,7 +83,7 @@ public class EstacionamientoServiceImpl implements EstacionamientoService {
     public EstacionamientoDTO consultarEstado(String patente) throws Exception {
         Optional<Estacionamiento> estacionamientoOpt = estacionamientoDAO.findByPatente(patente);
         if (!estacionamientoOpt.isPresent()) {
-            throw new Exception("El vehículo no está registrado");
+        	throw new EstacionamientoException("El vehículo no está registrado");
         }
 
         return convertToDTO(estacionamientoOpt.get());
@@ -96,6 +96,8 @@ public class EstacionamientoServiceImpl implements EstacionamientoService {
         dto.setUsuarioId(estacionamiento.getUsuario().getDni());
         return dto;
     }
+
+	
 
 	
 }

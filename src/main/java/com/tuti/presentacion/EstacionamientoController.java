@@ -49,8 +49,9 @@ public class EstacionamientoController {
 	 * @return
 	 * @throws Excepcion
 	 */
+    @Operation(summary = "Consultar el estado de un vehiculo a través de su patente")
     @GetMapping("/{patente}")
-    public ResponseEntity<EntityModel<EstacionamientoDTO>> consultarEstado(@PathVariable String patente)  throws Exception {
+    public ResponseEntity<Object> consultarEstado(@PathVariable String patente)  throws Exception {
         try {
             EstacionamientoDTO dto = estacionamientoService.consultarEstado(patente);
             EntityModel<EstacionamientoDTO> resource = EntityModel.of(dto);
@@ -62,9 +63,9 @@ public class EstacionamientoController {
             resource.add(usuarioLink);
            
             return ResponseEntity.ok(resource);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+        } catch (EstacionamientoException e) {
+    		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		}
     }
     /**
   	 * Permite estacionar un vehiculo
@@ -73,7 +74,7 @@ public class EstacionamientoController {
   	 * @return
   	 * @throws Excepcion
   	 */
-    @Operation(summary = "Estacionar vehiculo")
+    @Operation(summary = "Estacionar vehiculo ingresando contraseña y patente")
     @PostMapping("/estacionar")
     public ResponseEntity<Object> estacionarVehiculo(@RequestParam String patente, @RequestParam String password) throws Exception {
     	
@@ -106,20 +107,27 @@ public class EstacionamientoController {
      * @throws Exception 
   
   	 */
+    @Operation(summary = "Liberar vehiculo ingresando contraseña y patente")
     @PutMapping("/liberar")
     public ResponseEntity<Object> liberarVehiculo(@RequestParam String patente, @RequestParam String password) throws Exception {
     	
-    	EstacionamientoDTO dto=  estacionamientoService.liberarVehiculo(patente.toUpperCase(), password);
+    	try {
+    		EstacionamientoDTO dto=  estacionamientoService.liberarVehiculo(patente.toUpperCase(), password);
+        	
+     	   EntityModel<EstacionamientoDTO> resource = EntityModel.of(dto);
+     	   
+     	   Link selfLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(EstacionamientoController.class).liberarVehiculo(patente,password)).withSelfRel();
+            resource.add(selfLink);
+     	
+         Link usuarioLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UsuarioRestController.class).getById(dto.getUsuarioId())).withRel("usuario");
+         resource.add(usuarioLink);
+            
+             return ResponseEntity.ok(resource);
+    		
+    	}catch (EstacionamientoException e) {
+    		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		}
     	
-    	   EntityModel<EstacionamientoDTO> resource = EntityModel.of(dto);
-    	   
-    	   Link selfLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(EstacionamientoController.class).liberarVehiculo(patente,password)).withSelfRel();
-           resource.add(selfLink);
-    	
-        Link usuarioLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UsuarioRestController.class).getById(dto.getUsuarioId())).withRel("usuario");
-        resource.add(usuarioLink);
-           
-            return ResponseEntity.ok(resource);
        
     }
     
