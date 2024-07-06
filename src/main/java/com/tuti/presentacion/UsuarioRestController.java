@@ -47,19 +47,6 @@ public class UsuarioRestController {
 	@Autowired
 	private UsuarioService service;
 
-	/**
-	 * Permite filtrar personas. Ej1 curl --location --request GET
-	 * 'http://localhost:8081/personas?apellido=Perez&&nombre=Juan' Lista las
-	 * personas llamadas Perez, Juan Ej2 curl --location --request GET
-	 * 'http://localhost:8081/personas?apellido=Perez' Lista aquellas personas de
-	 * apellido PErez Ej3 curl --location --request GET
-	 * 'http://localhost:8081/personas' Lista todas las personas
-	 * 
-	 * @param apellido
-	 * @param nombre
-	 * @return
-	 * @throws Excepcion
-	 */
 	@Operation(summary = "Filtrar usuarios por apellido y/o nombre (o mostrar todos si no hay parámetros)")
 	@GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE })
 	public List<UsuarioResponseDTO> filtrarUsuarios(@RequestParam(name = "apellido", required = false) String apellido,
@@ -75,14 +62,6 @@ public class UsuarioRestController {
 
 	}
 
-	/**
-	 * Busca una persona a partir de su dni curl --location --request GET
-	 * 'http://localhost:8081/personas/27837171'
-	 * 
-	 * @param dni DNI de la persona buscada
-	 * @return Persona encontrada o Not found en otro caso
-	 * @throws Excepcion
-	 */
 	@Operation(summary = "Buscar un usuario por DNI")
 	@GetMapping(value = "/{dni}", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<UsuarioResponseDTO> getById(@PathVariable Long dni) throws Excepcion {
@@ -95,24 +74,11 @@ public class UsuarioRestController {
 
 	}
 
-	/**
-	 * Inserta una nueva persona en la base de datos curl --location --request POST
-	 * 'http://localhost:8081/personas' --header 'Accept: application/json' --header
-	 * 'Content-Type: application/json' --data-raw '{ "dni": 27837171, "apellido":
-	 * "perez", "nombre": "juan", "idCiudad": 2 }'
-	 * 
-	 * @param p Persona a insertar
-	 * @return Persona insertada o error en otro caso
-	 * @throws Exception
-	 */
 	@Operation(summary = "Agregar un nuevo usuario")
 	@PostMapping
 	public ResponseEntity<Object> guardar(@Valid @RequestBody UsuarioForm form, BindingResult result) throws Exception {
 
 		if (result.hasErrors()) {
-			// Dos alternativas:
-			// throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-			// this.formatearError(result));
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(this.formatearError(result));
 		}
 
@@ -127,16 +93,6 @@ public class UsuarioRestController {
 
 	}
 
-	/**
-	 * Modifica una persona existente en la base de datos: curl --location --request
-	 * PUT 'http://localhost:8081/personas/27837176' --header 'Accept:
-	 * application/json' --header 'Content-Type: application/json' --data-raw '{
-	 * "apellido": "Perez", "nombre": "Juan Martin" "idCiudad": 1 }'
-	 * 
-	 * @param p Persona a modificar
-	 * @return Persona Editada o error en otro caso
-	 * @throws Excepcion
-	 */
 	@Operation(summary = "Actualizar un usuario por DNI")
 	@PutMapping("/{dni}")
 	public ResponseEntity<Object> actualizar(@RequestBody UsuarioForm form, @PathVariable long dni) throws Exception {
@@ -156,13 +112,6 @@ public class UsuarioRestController {
 
 	}
 
-	/**
-	 * Borra la persona con el dni indicado curl --location --request DELETE
-	 * 'http://localhost:8081/personas/27837176'
-	 * 
-	 * @param dni Dni de la persona a borrar
-	 * @return ok en caso de borrar exitosamente la persona, error en otro caso
-	 */
 	@Operation(summary = "Borrar un usuario por DNI")
 	@DeleteMapping("/{dni}")
 	public ResponseEntity<String> eliminar(@PathVariable Long dni) {
@@ -174,23 +123,15 @@ public class UsuarioRestController {
 
 	}
 
-	/**
-	 * Métdo auxiliar que toma los datos del pojo y construye el objeto a devolver
-	 * en la response, con su hipervinculos
-	 * 
-	 * @param pojo
-	 * @return
-	 * @throws Excepcion
-	 */
 	private UsuarioResponseDTO buildResponse(Usuario pojo) throws Excepcion {
 		try {
 			UsuarioResponseDTO dto = new UsuarioResponseDTO(pojo);
 			// Self link
 			Link selfLink = WebMvcLinkBuilder.linkTo(UsuarioRestController.class).slash(pojo.getDni()).withSelfRel();
 			// Method link: Link al servicio de estacionamiento
-			Link estadoLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(EstacionamientoController.class)
-			.consultarEstado(pojo.getPatente()))
-			.withRel("estado-estacionamiento");
+			Link estadoLink = WebMvcLinkBuilder.linkTo(
+					WebMvcLinkBuilder.methodOn(EstacionamientoController.class).consultarEstado(pojo.getPatente()))
+					.withRel("estado-estacionamiento");
 			dto.add(selfLink);
 			dto.add(estadoLink);
 			return dto;

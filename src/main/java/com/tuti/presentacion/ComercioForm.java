@@ -2,7 +2,6 @@ package com.tuti.presentacion;
 
 import com.tuti.entidades.Comercio;
 
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
