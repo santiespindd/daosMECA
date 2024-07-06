@@ -20,9 +20,11 @@ import com.tuti.exception.Excepcion;
 import com.tuti.servicios.EstacionamientoServiceImpl;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/estacionamiento")
+@Tag(name = "Estacionamiento", description = "Estacionar un vehículo, liberar el estacionamiento y consultar estado")
 public class EstacionamientoController {
 
     @Autowired
