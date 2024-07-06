@@ -49,6 +49,7 @@ public class EstacionamientoController {
 	 * @return
 	 * @throws Excepcion
 	 */
+    @Operation(summary = "Consultar el estado de un vehiculo a través de su patente")
     @GetMapping("/{patente}")
     public ResponseEntity<Object> consultarEstado(@PathVariable String patente)  throws Exception {
         try {
@@ -73,7 +74,7 @@ public class EstacionamientoController {
   	 * @return
   	 * @throws Excepcion
   	 */
-    @Operation(summary = "Estacionar vehiculo")
+    @Operation(summary = "Estacionar vehiculo ingresando contraseña y patente")
     @PostMapping("/estacionar")
     public ResponseEntity<Object> estacionarVehiculo(@RequestParam String patente, @RequestParam String password) throws Exception {
     	
@@ -106,6 +107,7 @@ public class EstacionamientoController {
      * @throws Exception 
   
   	 */
+    @Operation(summary = "Liberar vehiculo ingresando contraseña y patente")
     @PutMapping("/liberar")
     public ResponseEntity<Object> liberarVehiculo(@RequestParam String patente, @RequestParam String password) throws Exception {
     	
