@@ -106,7 +106,7 @@ public class UsuarioForm {
 		u.setDomicilio(this.getDomicilio());
 		u.setEmail(this.getEmail());
 		u.setFechaNac(this.getFechaNac());
-		u.setPatente(this.getPatente());
+		u.setPatente(this.getPatente().toUpperCase());
 		u.setPassword(this.getPassword());
 		return u;
 	}

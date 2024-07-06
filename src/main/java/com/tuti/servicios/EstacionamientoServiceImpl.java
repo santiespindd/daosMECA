@@ -12,6 +12,7 @@ import com.tuti.accesoADatos.UsuarioDao;
 import com.tuti.dto.EstacionamientoDTO;
 import com.tuti.entidades.Estacionamiento;
 import com.tuti.entidades.Usuario;
+import com.tuti.exception.EstacionamientoException;
 
 @Service
 public class EstacionamientoServiceImpl implements EstacionamientoService {
@@ -22,11 +23,11 @@ public class EstacionamientoServiceImpl implements EstacionamientoService {
     @Autowired
     private UsuarioServiceImpl usuarioService;
 
-    public void estacionarVehiculo(String patente, String password) throws Exception {
+    public EstacionamientoDTO estacionarVehiculo(String patente, String password) throws Exception {
         Optional<Usuario> usuarioOpt = usuarioService.getByPatente(patente);
         
         if (!usuarioOpt.isPresent() || !usuarioOpt.get().getPassword().equals(password)) {
-            throw new Exception("Usuario no encontrado o contraseña incorrecta");
+        	throw new EstacionamientoException("Usuario no encontrado o contraseña incorrecta");
         }
        
         	
@@ -36,10 +37,12 @@ public class EstacionamientoServiceImpl implements EstacionamientoService {
              if (estacionamientoOpt.isPresent()) {
                  Estacionamiento estacionamiento = estacionamientoOpt.get();
                  if ("Estacionado".equals(estacionamiento.getEstado())) {
-                     throw new Exception("El vehículo ya está estacionado");
+                	 throw new EstacionamientoException("El vehículo ya está estacionado");
                  }
                  estacionamiento.setEstado("Estacionado");
                  estacionamientoDAO.save(estacionamiento);
+                 return convertToDTO(estacionamiento);
+
                 
              }
 
@@ -49,13 +52,14 @@ public class EstacionamientoServiceImpl implements EstacionamientoService {
              nuevoEstacionamiento.setUsuario(usuario);
              estacionamientoDAO.save(nuevoEstacionamiento);
       
-       
+             return convertToDTO(nuevoEstacionamiento);
+
         
     }
 
-  /*  public void liberarVehiculo(String patente, String password) throws Exception {
-        Optional<Usuario> usuarioOpt = usuarioDAO.findByPassword(password); /// ESTO DEBERIA SER UN SERVICIO DE USUARIO
-        if (!usuarioOpt.isPresent()) {
+    public  EstacionamientoDTO liberarVehiculo(String patente, String password) throws Exception {
+    	Optional<Usuario> usuarioOpt = usuarioService.getByPatente(patente);
+        if (!usuarioOpt.isPresent() || !usuarioOpt.get().getPassword().equals(password)) {
             throw new Exception("Usuario no encontrado o contraseña incorrecta");
         }
 
@@ -72,7 +76,9 @@ public class EstacionamientoServiceImpl implements EstacionamientoService {
         estacionamiento.setEstado("Libre");
         estacionamientoDAO.save(estacionamiento);
         
-    }*/
+        return convertToDTO(estacionamiento);
+        
+    }
 
     public EstacionamientoDTO consultarEstado(String patente) throws Exception {
         Optional<Estacionamiento> estacionamientoOpt = estacionamientoDAO.findByPatente(patente);
@@ -91,9 +97,5 @@ public class EstacionamientoServiceImpl implements EstacionamientoService {
         return dto;
     }
 
-	@Override
-	public void liberarVehiculo(String patente, String password) throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
+	
 }
