@@ -26,10 +26,12 @@ import com.tuti.servicios.UsuarioService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/recargas")
+@Tag(name = "Recargas", description = "Buscar, agregar y actualizar recargas")
 public class RecargaRestController {
 	
 	@Autowired

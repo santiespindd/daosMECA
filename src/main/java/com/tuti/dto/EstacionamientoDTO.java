@@ -4,8 +4,15 @@ public class EstacionamientoDTO {
     private String patente;
     private String estado;
     private Long usuarioId;
+    private String password;
     
     
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
 	public String getPatente() {
 		return patente;
 	}

@@ -17,7 +17,6 @@ public class Estacionamiento {
     private String estado; // Estacionado / Libre
 
     @ManyToOne
-    @JoinColumn(name = "dni")
     private Usuario usuario;
 
 	public Long getId() {
