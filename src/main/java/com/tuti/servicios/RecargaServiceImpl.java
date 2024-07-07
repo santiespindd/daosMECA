@@ -1,5 +1,6 @@
 package com.tuti.servicios;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,63 +14,63 @@ import com.tuti.entidades.Recarga;
 import com.tuti.entidades.Usuario;
 import com.tuti.exception.Excepcion;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class RecargaServiceImpl implements RecargaService{
 	
 	@Autowired
-	private RecargaDao dao;
+	private RecargaDao recargaDao;
 	@Autowired
 	private UsuarioService usuarioService;
 	@Autowired
 	private ComercioService comercioService;
-	@Autowired
-	private EstacionamientoService estacionamientoService;
-	
-	public List<Recarga>getAll(){
-		return dao.findAll();
+
+	@Override
+	public List<Recarga> getAllRecargas(){
+		return recargaDao.findAll();
 	}
 	
-	public void insert(Recarga recarga) throws Exception{
-		Optional<Usuario> usuarioOpt = usuarioService.getById(recarga.getUsuario().getDni());
-		Optional<Comercio>comercioOpt = comercioService.getByCuit(recarga.getComercio().getId());
-	//	Optional<Estacionamiento>estacionamientoOpt = estacionamientoService.(recarga.getEstacionamiento().getPatente());
+	@Override
+	public Optional<Recarga>getRecargaByPatente(String patente){
+		return recargaDao.findByPatente(patente);
+	}
+	
+	@Override
+	public Optional<Recarga>getRecargaByUsuarioDni(Long dni){
+		return recargaDao.findByUsuarioDni(dni);
+	}
+	
+	@Override
+	public Optional<Recarga>getRecargaByComercioCuit(Long comercioCuit){
+		return recargaDao.findByComercioCuit(comercioCuit);
+	}
+	
+	@Override
+	@Transactional
+	public Recarga realizarRecarga(String patente, Long comercioCuit, BigDecimal importe) throws Excepcion{
+		Usuario usuario = usuarioService.getByPatente(patente)
+				.orElseThrow(() -> new Excepcion("Usuario no encontrado", 404));
 		
-		if(usuarioOpt.isEmpty() || comercioOpt.isEmpty()) {
-			throw new Excepcion("Usuario, Comercio o estacionamiento no encontrado", 400);
+		Comercio comercio = comercioService.getByCuit(comercioCuit)
+				.orElseThrow(() -> new Excepcion("Comercio no encontrado", 404));
+		
+		if (!"autorizado".equals(comercio.getEstado())) {
+			throw new Excepcion("El comercio no esta autorizado para realizar recargas", 400);
 		}
 		
-		Usuario usuario = usuarioOpt.get();
-		Comercio comercio = comercioOpt.get();
-	//	Estacionamiento estacionamiento = estacionamientoOpt.get();
-		
-		usuario.setSaldo(usuario.getSaldo().add(recarga.getImporte()));
-		usuarioService.update(usuario);
+		Recarga recarga = new Recarga();
 		recarga.setUsuario(usuario);
 		recarga.setComercio(comercio);
-	//	recarga.setEstacionamiento(estacionamiento);
-		dao.save(recarga);		
+		recarga.setPatente(patente);
+		recarga.setImporte(importe);
+		
+		usuario.setSaldo(usuario.getSaldo().add(importe));
+		usuarioService.update(usuario);
+		
+		return recargaDao.save(recarga);
+		}
 	}
-	public void delete(Long id) {
-		dao.deleteById(id);
-	}
-	   @Override
-	    public List<Recarga> getByUsuarioDni(Long dni) {
-	        return dao.findByUsuarioDni(dni);
-	    }
-	    @Override
-	    public List<Recarga> getByEstacionamientoPatente(String patente) {
-	        return dao.findByEstacionamientoPatente(patente);
-	    }
+	
+	
 
-	@Override
-	public Optional<Recarga> getById(Long id) {
-		return dao.findById(id);
-	}
-
-	@Override
-	public List<Recarga> getByComercioCuit(Long cuit) {
-
-		return dao.findByComercioCuit(cuit);
-	}
-
-}
