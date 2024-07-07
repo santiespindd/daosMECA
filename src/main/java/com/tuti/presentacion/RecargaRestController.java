@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -93,15 +94,25 @@ public class RecargaRestController {
 				.collect(Collectors.toList());
 		return ResponseEntity.ok(recargaDTOs);
 	}
+	
 	@Operation(summary = "Insertar una nueva recarga")
 	@PostMapping
-	public ResponseEntity<RecargaResponseDTO> realizarRecarga(
-			@RequestParam String patente,
-			@RequestParam Long comercioCuit,
-			@RequestParam BigDecimal importe) {
+	public ResponseEntity<?> realizarRecarga(@Valid @RequestBody RecargaForm recargaRequest, BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			List<String>errors=bindingResult.getAllErrors().stream()
+					.map(DefaultMessageSourceResolvable::getDefaultMessage)
+					.collect(Collectors.toList());
+			return ResponseEntity.badRequest().body(errors);
+		}
 		try {
-			Recarga recarga = recargaService.realizarRecarga(patente, comercioCuit, importe);
-			RecargaResponseDTO recargaDTO = convertToDTO(recarga);
+			 Recarga recarga = recargaService.realizarRecarga(
+	                    recargaRequest.getId(),
+	                    recargaRequest.getUsuarioDni(),
+	                    recargaRequest.getPatente(),
+	                    recargaRequest.getComercioCuit(),
+	                    recargaRequest.getImporte()
+	            );
+			 RecargaResponseDTO recargaDTO = RecargaResponseDTO.fromRecarga(recarga);
 			return ResponseEntity.ok(recargaDTO);
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(null);

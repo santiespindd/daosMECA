@@ -20,21 +20,16 @@ public class Recarga{
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
-	@NotNull
 	@ManyToOne
 	@JoinColumn(name="usuario_dni")
 	private Usuario usuario;
 	
-	@NotNull
 	@ManyToOne
 	@JoinColumn(name="comercio_id")
 	private Comercio comercio;
 	
-	@NotNull
-	@Pattern(regexp = "^[a-zA-Z0-9]+$")
 	private String patente;
 	
-	@NotNull
 	private BigDecimal importe;
 	
 	public Long getId() {
