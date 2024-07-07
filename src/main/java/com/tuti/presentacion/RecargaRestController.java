@@ -59,24 +59,39 @@ public class RecargaRestController {
 	
 	@Operation(summary = "Obtener recargas por patente")
 	@GetMapping("/patente")
-	public ResponseEntity<RecargaResponseDTO>getRecargaByPatente(@RequestParam String patente) {
-		return recargaService.getRecargaByPatente(patente)
-				.map(recarga -> ResponseEntity.ok(convertToDTO(recarga)))
-				.orElse(ResponseEntity.notFound().build());
+	public ResponseEntity<List<RecargaResponseDTO>>getRecargaByPatente(@RequestParam String patente) {
+		List<Recarga> recargas = recargaService.getRecargaByPatente(patente);
+		if (recargas.isEmpty()) {
+			return ResponseEntity.notFound().build();
+		}
+		List<RecargaResponseDTO> recargaDTOs = recargas.stream()	
+				.map(this::convertToDTO)
+				.collect(Collectors.toList());
+		return ResponseEntity.ok(recargaDTOs);
 	}
 	@Operation(summary = "Obtener recargas por dni de usuario")
 	@GetMapping("/dni")
-    public ResponseEntity<RecargaResponseDTO> getRecargaByUsuarioDni(@RequestParam Long dni) {
-        return recargaService.getRecargaByUsuarioDni(dni)
-                .map(recarga -> ResponseEntity.ok(convertToDTO(recarga)))
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<List<RecargaResponseDTO>> getRecargaByUsuarioDni(@RequestParam Long dni) {
+		List<Recarga> recargas = recargaService.getRecargaByUsuarioDni(dni);
+		if (recargas.isEmpty()) {
+			return ResponseEntity.notFound().build();
+		}
+		List<RecargaResponseDTO> recargaDTOs = recargas.stream()	
+				.map(this::convertToDTO)
+				.collect(Collectors.toList());
+		return ResponseEntity.ok(recargaDTOs);
     }
 	@Operation(summary = "Obtener recargas por cuit de comercio")
 	@GetMapping("/cuit")
-	public ResponseEntity<RecargaResponseDTO>getRecargaByComercioCuit(@RequestParam Long comercioCuit){
-		return recargaService.getRecargaByComercioCuit(comercioCuit)
-				.map(recarga -> ResponseEntity.ok(convertToDTO(recarga)))
-				.orElse(ResponseEntity.notFound().build());
+	public ResponseEntity<List<RecargaResponseDTO>>getRecargaByComercioCuit(@RequestParam Long comercioCuit){
+		List<Recarga> recargas = recargaService.getRecargaByComercioCuit(comercioCuit);
+		if (recargas.isEmpty()) {
+			return ResponseEntity.notFound().build();
+		}
+		List<RecargaResponseDTO> recargaDTOs = recargas.stream()	
+				.map(this::convertToDTO)
+				.collect(Collectors.toList());
+		return ResponseEntity.ok(recargaDTOs);
 	}
 	@Operation(summary = "Insertar una nueva recarga")
 	@PostMapping
@@ -105,7 +120,7 @@ public class RecargaRestController {
 			dto.add(selfLink);
 			
 			try {
-			Link usuarioLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UsuarioRestController.class).getById(recarga.getUsuario().getDni())).withRel("comercio");
+			Link usuarioLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UsuarioRestController.class).getById(recarga.getUsuario().getDni())).withRel("usuario");
 			dto.add(usuarioLink);
 			}catch (Exception e){
 				

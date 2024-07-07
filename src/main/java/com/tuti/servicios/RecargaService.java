@@ -13,21 +13,21 @@ public interface RecargaService {
 	 * @param patente
 	 * @return
 	 */
-	Optional<Recarga>getRecargaByPatente(String patente);
+	List<Recarga>getRecargaByPatente(String patente);
 	
 	/**
 	 * Obtiene una recarga por dni de usuario
 	 * @param dni
 	 * @return
 	 */
-	Optional<Recarga>getRecargaByUsuarioDni(Long dni);
+	List<Recarga>getRecargaByUsuarioDni(Long dni);
 	
 	/**
 	 * Obtiene una recarga por cuit de comercio
 	 * @param comercioCuit
 	 * @return
 	 */
-	Optional<Recarga>getRecargaByComercioCuit(Long comercioCuit);
+	List<Recarga>getRecargaByComercioCuit(Long comercioCuit);
 	
 	/**
 	 * Obtiene todas las recargas

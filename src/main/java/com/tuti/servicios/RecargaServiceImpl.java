@@ -32,17 +32,17 @@ public class RecargaServiceImpl implements RecargaService{
 	}
 	
 	@Override
-	public Optional<Recarga>getRecargaByPatente(String patente){
+	public List<Recarga>getRecargaByPatente(String patente){
 		return recargaDao.findByPatente(patente);
 	}
 	
 	@Override
-	public Optional<Recarga>getRecargaByUsuarioDni(Long dni){
+	public List<Recarga>getRecargaByUsuarioDni(Long dni){
 		return recargaDao.findByUsuarioDni(dni);
 	}
 	
 	@Override
-	public Optional<Recarga>getRecargaByComercioCuit(Long comercioCuit){
+	public List<Recarga>getRecargaByComercioCuit(Long comercioCuit){
 		return recargaDao.findByComercioCuit(comercioCuit);
 	}
 	
