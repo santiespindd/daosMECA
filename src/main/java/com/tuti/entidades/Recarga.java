@@ -1,9 +1,6 @@
 package com.tuti.entidades;
 
 import java.math.BigDecimal;
-
-import org.springframework.hateoas.RepresentationModel;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
