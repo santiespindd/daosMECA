@@ -59,8 +59,8 @@ public class RecargaRestController {
 	}
 	
 	@Operation(summary = "Obtener recargas por patente")
-	@GetMapping("/{patente}")
-	public ResponseEntity<List<RecargaResponseDTO>>getRecargaByPatente(@RequestParam String patente) {
+	@GetMapping("/patente/{patente}")
+	public ResponseEntity<List<RecargaResponseDTO>>getRecargaByPatente(@PathVariable String patente) {
 		List<Recarga> recargas = recargaService.getRecargaByPatente(patente);
 		if (recargas.isEmpty()) {
 			return ResponseEntity.notFound().build();
@@ -71,8 +71,8 @@ public class RecargaRestController {
 		return ResponseEntity.ok(recargaDTOs);
 	}
 	@Operation(summary = "Obtener recargas por dni de usuario")
-	@GetMapping("/{dni}")
-    public ResponseEntity<List<RecargaResponseDTO>> getRecargaByUsuarioDni(@RequestParam Long dni) {
+	@GetMapping("/dni/{dni}")
+    public ResponseEntity<List<RecargaResponseDTO>> getRecargaByUsuarioDni(@PathVariable Long dni) {
 		List<Recarga> recargas = recargaService.getRecargaByUsuarioDni(dni);
 		if (recargas.isEmpty()) {
 			return ResponseEntity.notFound().build();
@@ -83,9 +83,9 @@ public class RecargaRestController {
 		return ResponseEntity.ok(recargaDTOs);
     }
 	@Operation(summary = "Obtener recargas por cuit de comercio")
-	@GetMapping("/{cuit}")
-	public ResponseEntity<List<RecargaResponseDTO>>getRecargaByComercioCuit(@RequestParam Long comercioCuit){
-		List<Recarga> recargas = recargaService.getRecargaByComercioCuit(comercioCuit);
+	@GetMapping("/cuit/{cuit}")
+	public ResponseEntity<List<RecargaResponseDTO>>getRecargaByComercioCuit(@PathVariable Long cuit){
+		List<Recarga> recargas = recargaService.getRecargaByComercioCuit(cuit);
 		if (recargas.isEmpty()) {
 			return ResponseEntity.notFound().build();
 		}
