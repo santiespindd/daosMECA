@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +24,7 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 
 import com.tuti.dto.RecargaResponseDTO;
 import com.tuti.entidades.Recarga;
+import com.tuti.exception.Excepcion;
 import com.tuti.servicios.ComercioService;
 import com.tuti.servicios.EstacionamientoService;
 import com.tuti.servicios.RecargaService;
@@ -59,7 +59,7 @@ public class RecargaRestController {
 	}
 	
 	@Operation(summary = "Obtener recargas por patente")
-	@GetMapping("/patente")
+	@GetMapping("/{patente}")
 	public ResponseEntity<List<RecargaResponseDTO>>getRecargaByPatente(@RequestParam String patente) {
 		List<Recarga> recargas = recargaService.getRecargaByPatente(patente);
 		if (recargas.isEmpty()) {
@@ -71,7 +71,7 @@ public class RecargaRestController {
 		return ResponseEntity.ok(recargaDTOs);
 	}
 	@Operation(summary = "Obtener recargas por dni de usuario")
-	@GetMapping("/dni")
+	@GetMapping("/{dni}")
     public ResponseEntity<List<RecargaResponseDTO>> getRecargaByUsuarioDni(@RequestParam Long dni) {
 		List<Recarga> recargas = recargaService.getRecargaByUsuarioDni(dni);
 		if (recargas.isEmpty()) {
@@ -83,7 +83,7 @@ public class RecargaRestController {
 		return ResponseEntity.ok(recargaDTOs);
     }
 	@Operation(summary = "Obtener recargas por cuit de comercio")
-	@GetMapping("/cuit")
+	@GetMapping("/{cuit}")
 	public ResponseEntity<List<RecargaResponseDTO>>getRecargaByComercioCuit(@RequestParam Long comercioCuit){
 		List<Recarga> recargas = recargaService.getRecargaByComercioCuit(comercioCuit);
 		if (recargas.isEmpty()) {
@@ -94,30 +94,22 @@ public class RecargaRestController {
 				.collect(Collectors.toList());
 		return ResponseEntity.ok(recargaDTOs);
 	}
-	
 	@Operation(summary = "Insertar una nueva recarga")
-	@PostMapping
-	public ResponseEntity<?> realizarRecarga(@Valid @RequestBody RecargaForm recargaRequest, BindingResult bindingResult) {
-		if (bindingResult.hasErrors()) {
-			List<String>errors=bindingResult.getAllErrors().stream()
-					.map(DefaultMessageSourceResolvable::getDefaultMessage)
-					.collect(Collectors.toList());
-			return ResponseEntity.badRequest().body(errors);
-		}
-		try {
-			 Recarga recarga = recargaService.realizarRecarga(
-	                    recargaRequest.getId(),
-	                    recargaRequest.getUsuarioDni(),
-	                    recargaRequest.getPatente(),
-	                    recargaRequest.getComercioCuit(),
-	                    recargaRequest.getImporte()
-	            );
-			 RecargaResponseDTO recargaDTO = RecargaResponseDTO.fromRecarga(recarga);
-			return ResponseEntity.ok(recargaDTO);
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().body(null);
-		}
-	}
+    @PostMapping
+    public ResponseEntity<?> realizarRecarga(
+            @RequestParam String patente,
+            @RequestParam Long comercioCuit,
+            @RequestParam BigDecimal importe) {
+        try {
+            Recarga recarga = recargaService.realizarRecarga(patente, comercioCuit, importe);
+            RecargaResponseDTO recargaDTO = convertToDTO(recarga);
+            return ResponseEntity.ok(recargaDTO);
+        } catch (Excepcion e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error inesperado: " + e.getMessage());
+        }
+    }
 	
 	private RecargaResponseDTO convertToDTO(Recarga recarga) {
 		RecargaResponseDTO dto = new RecargaResponseDTO();

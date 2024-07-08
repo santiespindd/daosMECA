@@ -20,16 +20,21 @@ public class Recarga{
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
+	@NotNull(message = "El usuario no puede ser nulo")
 	@ManyToOne
 	@JoinColumn(name="usuario_dni")
 	private Usuario usuario;
 	
+	@NotNull(message = "El cuit no puede ser nulo")
 	@ManyToOne
 	@JoinColumn(name="comercio_id")
 	private Comercio comercio;
 	
+	@NotNull(message = "La patente no puede ser nula")
+	@Pattern(regexp = "^[a-zA-Z0-9]+$")
 	private String patente;
 	
+	@NotNull
 	private BigDecimal importe;
 	
 	public Long getId() {

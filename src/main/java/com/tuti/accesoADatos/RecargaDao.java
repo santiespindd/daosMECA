@@ -16,4 +16,5 @@ public interface RecargaDao extends JpaRepository<Recarga, Long>{
 	List<Recarga>findByPatente(String patente);
 	List<Recarga>findByComercioCuit(Long comercioCuit);
 	
+	
 }

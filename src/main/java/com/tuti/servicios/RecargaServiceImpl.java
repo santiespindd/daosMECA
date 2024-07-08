@@ -48,9 +48,9 @@ public class RecargaServiceImpl implements RecargaService{
 	
 	@Override
 	@Transactional
-	public Recarga realizarRecarga(Long id, Long usuarioDni, String patente, Long comercioCuit, BigDecimal importe) throws Excepcion{
-		Usuario usuario = usuarioService.getById(usuarioDni)
-				.orElseThrow(() -> new Excepcion("Usuario no encontrado", 404));
+	public Recarga realizarRecarga(String patente, Long comercioCuit, BigDecimal importe) throws Excepcion{
+		Usuario usuario = usuarioService.getByPatente(patente)
+				.orElseThrow(() -> new Excepcion("Patente no encontrada", 404));
 		
 		Comercio comercio = comercioService.getByCuit(comercioCuit)
 				.orElseThrow(() -> new Excepcion("Comercio no encontrado", 404));

@@ -37,12 +37,10 @@ public interface RecargaService {
 	
 	/**
 	 * Inserta una recarga
-	 * @param usuarioDni 
-	 * @param id 
 	 * @param patente, comercioCuit, importe
 	 * @return
 	 */
-	Recarga realizarRecarga(Long id, Long usuarioDni, String patente, Long comercioCuit, BigDecimal importe) throws Excepcion;
+	Recarga realizarRecarga(String patente, Long comercioCuit, BigDecimal importe) throws Excepcion;
 	
 	
 }
